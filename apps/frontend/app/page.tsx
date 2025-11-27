@@ -35,7 +35,7 @@ export default function Dashboard() {
     <PageShell>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">QuantOS Dashboard</h1>
+        <h1 className="text-3xl font-bold">QuantOS Devboard</h1>
         <SearchBar onSearch={(s) => setSymbol(s)} />
       </div>
 
