@@ -1,0 +1,16 @@
+pyproject.toml
+core/__init__.py
+core.egg-info/PKG-INFO
+core.egg-info/SOURCES.txt
+core.egg-info/dependency_links.txt
+core.egg-info/top_level.txt
+core/backtesting/__init__.py
+core/backtesting/simulator.py
+core/indicators/__init__.py
+core/indicators/ema.py
+core/indicators/rsi.py
+core/indicators/sma.py
+core/strategies/__init__.py
+core/strategies/mean_reversion.py
+core/utils/__init__.py
+core/utils/loader.py
