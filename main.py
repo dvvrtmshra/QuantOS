@@ -51,6 +51,40 @@ def calculate_macd(data: pd.DataFrame):
     return data
 
 # ---------------------------------------------
+# 4) Calculate Simple and Exponential Moving Average
+# ---------------------------------------------
+def calculate_moving_averages(data: pd.DataFrame):
+    data["SMA20"] = data["Close"].rolling(window=20).mean()
+    data["SMA50"] = data["Close"].rolling(window=50).mean()
+    data["EMA20"] = data["Close"].ewm(span=20, adjust=False).mean()
+    data["EMA50"] = data["Close"].ewm(span=50, adjust=False).mean()
+    return data
+
+
+# ---------------------------------------------
+# 5) Calculate Bollinger Bands
+# ---------------------------------------------
+def calculate_bollinger(data: pd.DataFrame, window: int = 20):
+    sma = data["Close"].rolling(window=window).mean()
+    std = data["Close"].rolling(window=window).std()
+
+    data["BB_MID"] = sma
+    data["BB_UPPER"] = sma + (2 * std)
+    data["BB_LOWER"] = sma - (2 * std)
+    return data
+
+
+# ---------------------------------------------
+# 6) Calculate VWAP
+# ---------------------------------------------
+def calculate_vwap(data: pd.DataFrame):
+    price_volume = (data["Close"] * data["Volume"]).cumsum()
+    cumulative_volume = data["Volume"].cumsum()
+    data["VWAP"] = price_volume / cumulative_volume
+    return data
+
+
+# ---------------------------------------------
 # 4) Plot Close Price
 # ---------------------------------------------
 def plot_close_price(data: pd.DataFrame, ticker: str):
@@ -66,10 +100,15 @@ def plot_close_price(data: pd.DataFrame, ticker: str):
 # MAIN EXECUTION
 # ---------------------------------------------
 if __name__ == "__main__":
-    ticker = "INFY.NS"  # change this to any ticker
+    ticker = "AAPL"
     data = get_stock_data(ticker)
+
     data = calculate_rsi(data)
     data = calculate_macd(data)
+    data = calculate_moving_averages(data)
+    data = calculate_bollinger(data)
+    data = calculate_vwap(data)
 
     print(data.tail())
     plot_close_price(data, ticker)
+
