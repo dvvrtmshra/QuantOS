@@ -1,12 +1,14 @@
-import { api } from "../lib/api";
+import PageShell from "@/components/layout/PageShell";
+import CandleChart from "@/components/charts/CandleChart";
+import { api } from "@/lib/api";
 
 export default async function Page() {
   const candles = await api("/candles");
   const rsi = await api("/rsi");
 
   return (
-    <main className="p-6 space-y-6 text-white">
-      <h1 className="text-3xl font-bold">QuantOS Dashboard</h1>
+    <PageShell>
+      <h1 className="text-3xl font-bold mb-4">QuantOS Dashboard</h1>
 
       <section className="grid grid-cols-3 gap-4 mt-6">
         <div className="p-4 bg-neutral-900 rounded-lg">
@@ -26,9 +28,15 @@ export default async function Page() {
       </section>
 
       <section className="bg-neutral-900 p-4 rounded-lg mt-8">
-        <p>Candle Data:</p>
+        <p className="font-semibold mb-2">First Candle</p>
         <pre className="text-xs">{JSON.stringify(candles[0], null, 2)}</pre>
       </section>
-    </main>
+
+      {/* 🔥 Chart Section */}
+      <div className="bg-neutral-900 p-4 rounded-lg mt-8">
+        <h2 className="text-xl font-semibold mb-3">Market Candles</h2>
+        <CandleChart data={candles} />
+      </div>
+    </PageShell>
   );
 }
