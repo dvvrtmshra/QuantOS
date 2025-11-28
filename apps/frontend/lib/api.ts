@@ -1,5 +1,13 @@
 export async function api(path: string) {
-  const res = await fetch(`http://127.0.0.1:8000${path}`, {
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
+  const url = `${BASE_URL}${path}`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
     cache: "no-store",
   });
 

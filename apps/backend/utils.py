@@ -1,19 +1,19 @@
-import random
+import yfinance as yf
 
-def load_candles(symbol: str):
-    price = 20000
-    result = []
-    for t in range(100):
-        o = price + random.randint(-30, 30)
-        c = o + random.randint(-50, 50)
-        h = max(o, c) + random.randint(0, 45)
-        l = min(o, c) - random.randint(0, 45)
-        price = c
-        result.append({
-            "time": t,
-            "open": o,
-            "high": h,
-            "low": l,
-            "close": c
+def load_candles(symbol: str, period: str = "1mo", interval: str = "1d"):
+    ticker = yf.Ticker(symbol)
+    df = ticker.history(period=period, interval=interval)
+
+    df.reset_index(inplace=True)
+
+    candles = []
+    for _, row in df.iterrows():
+        candles.append({
+            "time": int(row["Date"].timestamp()),   # UNIX seconds
+            "open": float(row["Open"]),
+            "high": float(row["High"]),
+            "low": float(row["Low"]),
+            "close": float(row["Close"]),
         })
-    return result
+
+    return candles

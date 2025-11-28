@@ -1,103 +1,111 @@
 "use client";
 
-import ReactECharts from "echarts-for-react";
+import { useEffect, useRef } from "react";
+import {
+    createChart,
+    IChartApi,
+    CandlestickData,
+    UTCTimestamp,
+} from "lightweight-charts";
 
 interface Candle {
-  timestamp: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
+    time: number | string;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
 }
 
-// SMA calculation
-function calcSMA(data: number[], period: number): number[] {
-  const sma: number[] = [];
-  for (let i = 0; i < data.length; i++) {
-    if (i < period) {
-      sma.push(null as any); // no value before period
-      continue;
-    }
-    const slice = data.slice(i - period, i);
-    sma.push(slice.reduce((a, b) => a + b, 0) / period);
-  }
-  return sma;
+interface Props {
+    data: Candle[];
 }
 
-export default function CandleChart({ data }: { data: Candle[] }) {
-  if (!data || data.length === 0) return <p>No data</p>;
+export default function CandleChart({ data }: Props) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const chartRef = useRef<IChartApi | null>(null);
 
-  const xAxis = data.map((c) => c.timestamp);
-  const ohlc = data.map((c) => [c.open, c.close, c.low, c.high]);
+    useEffect(() => {
+        if (!containerRef.current || data.length === 0) return;
 
-  const closePrices = data.map((c) => c.close);
+        // 🔥 only destroy if chart exists (and not already disposed)
+        if (chartRef.current) {
+            try {
+                chartRef.current.remove();
+            } catch (e) {
+                console.warn("Chart already disposed, skipping...");
+            }
+        }
 
-  // --- Calculate Moving Averages ---
-  const ma20 = calcSMA(closePrices, 20);
-  const ma50 = calcSMA(closePrices, 50);
+        const chart = createChart(containerRef.current, {
+            width: containerRef.current.clientWidth,
+            height: 420,
+            layout: {
+                background: { color: "#121212" },
+                textColor: "#e5e5e5",
+            },
+            grid: {
+                vertLines: { color: "#2A2A2A" },
+                horzLines: { color: "#2A2A2A" },
+            },
+            rightPriceScale: { borderColor: "#2A2A2A" },
+            timeScale: {
+                borderColor: "#2A2A2A",
+                timeVisible: true,
+            },
+        });
 
-  const option = {
-    backgroundColor: "#0D0F14",
+        chartRef.current = chart;
 
-    tooltip: {
-      trigger: "axis",
-      backgroundColor: "#111",
-      borderColor: "#333",
-      textStyle: { color: "#eee" },
-    },
+        const series = chart.addCandlestickSeries({
+            upColor: "#10b981",
+            downColor: "#ef4444",
+            borderUpColor: "#10b981",
+            borderDownColor: "#ef4444",
+            wickUpColor: "#10b981",
+            wickDownColor: "#ef4444",
+        });
 
-    xAxis: {
-      type: "category",
-      data: xAxis,
-      axisLine: { lineStyle: { color: "#666" } },
-      axisLabel: { color: "#ccc" },
-    },
+        const formatted: CandlestickData[] = data.map((c) => ({
+            time: (
+                typeof c.time === "string"
+                    ? Math.floor(new Date(c.time).getTime() / 1000)
+                    : c.time
+            ) as UTCTimestamp,
+            open: c.open,
+            high: c.high,
+            low: c.low,
+            close: c.close,
+        }));
 
-    yAxis: {
-      scale: true,
-      axisLine: { lineStyle: { color: "#666" } },
-      axisLabel: { color: "#ccc" },
-      splitLine: { lineStyle: { color: "#222" } },
-    },
+        series.setData(formatted);
 
-    series: [
-      {
-        type: "candlestick",
-        name: "Candles",
-        data: ohlc,
-        itemStyle: {
-          color: "#0ECB81",
-          color0: "#FF4976",
-          borderColor: "#0ECB81",
-          borderColor0: "#FF4976",
-        },
-      },
+        function handleResize() {
+            if (chartRef.current && containerRef.current) {
+                chartRef.current.applyOptions({
+                    width: containerRef.current.clientWidth,
+                });
+            }
+        }
 
-      // 🚀 MA20
-      {
-        name: "MA 20",
-        type: "line",
-        data: ma20,
-        smooth: true,
-        symbol: "none",
-        lineStyle: { color: "#0ECB81", width: 1.6 },
-      },
+        window.addEventListener("resize", handleResize);
 
-      // 🚀 MA50
-      {
-        name: "MA 50",
-        type: "line",
-        data: ma50,
-        smooth: true,
-        symbol: "none",
-        lineStyle: { color: "#FFD700", width: 1.6 },
-      },
-    ],
-  };
+        // 🔥 proper cleanup
+        return () => {
+            window.removeEventListener("resize", handleResize);
+            if (chartRef.current) {
+                try {
+                    chartRef.current.remove();
+                } catch {}
+                chartRef.current = null;
+            }
+        };
+    }, [data]);
 
-  return (
-    <div className="bg-neutral-900 p-4 rounded-xl">
-      <ReactECharts option={option} style={{ height: "450px" }} />
-    </div>
-  );
+    return (
+        <div
+            ref={containerRef}
+            className="w-full bg-neutral-900 rounded-lg p-2"
+            style={{ height: 450 }}
+        />
+    );
 }

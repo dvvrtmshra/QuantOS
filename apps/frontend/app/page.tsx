@@ -5,26 +5,42 @@ import PageShell from "@/components/layout/PageShell";
 import CandleChart from "@/components/charts/CandleChart";
 import RSIChart from "@/components/charts/RSIChart";
 import SearchBar from "@/components/SearchBar";
+import TimeframeButtons from "@/components/TimeframeButtons";
 import { api } from "@/lib/api";
 
+const TIMEFRAMES = {
+  "1D": { period: "5d", interval: "30m" },
+  "1M": { period: "1mo", interval: "1d" },
+  "3M": { period: "3mo", interval: "1d" },
+  "6M": { period: "6mo", interval: "1d" },
+  "1Y": { period: "1y", interval: "1d" },
+  "5Y": { period: "5y", interval: "1wk" },
+  "MAX": { period: "max", interval: "1wk" },
+};
+
 export default function Dashboard() {
+  const [timeframe, setTimeframe] = useState("1M");
   const [symbol, setSymbol] = useState("BTC");
-  const [candles, setCandles] = useState<any[]>([]);
+  const [candles, setCandles] = useState([]);
   const [rsi, setRsi] = useState<number | null>(null);
   const [price, setPrice] = useState<number | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
-        // 🚀 Fetch historical candles
-        const c = await api(`/candles?symbol=${symbol}`);
+        const { period, interval } = TIMEFRAMES[timeframe];
+
+        // ---- candles ----
+        const c = await api(
+          `/candles?symbol=${symbol}&period=${period}&interval=${interval}`
+        );
         setCandles(c);
 
-        // 🚀 Fetch RSI
+        // ---- RSI ----
         const r = await api(`/rsi?symbol=${symbol}`);
         setRsi(r.rsi);
 
-        // 🚀 Fetch Real-time Price
+        // ---- live price ----
         const p = await api(`/price?symbol=${symbol}`);
         setPrice(p.price);
       } catch (err) {
@@ -33,20 +49,16 @@ export default function Dashboard() {
     }
 
     load();
-  }, [symbol]);
+  }, [symbol, timeframe]); // <-- FIX HERE
 
   return (
     <PageShell>
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">QuantOS Dashboard</h1>
         <SearchBar onSearch={(s) => setSymbol(s)} />
       </div>
 
-      {/* Stat Cards */}
       <section className="grid grid-cols-4 gap-4 mt-6">
-        
-        {/* Current Price */}
         <div className="p-4 bg-neutral-900 rounded-lg">
           <p className="text-sm text-neutral-400">Current Price</p>
           <p className="text-3xl font-semibold">
@@ -59,7 +71,6 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* RSI */}
         <div className="p-4 bg-neutral-900 rounded-lg">
           <p className="text-sm text-neutral-400">RSI</p>
           <p className="text-3xl font-semibold">
@@ -67,23 +78,24 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Candle Count */}
         <div className="p-4 bg-neutral-900 rounded-lg">
           <p className="text-sm text-neutral-400">Candles Loaded</p>
           <p className="text-3xl font-semibold">{candles.length}</p>
         </div>
 
-        {/* Symbol */}
         <div className="p-4 bg-neutral-900 rounded-lg">
           <p className="text-sm text-neutral-400">Symbol</p>
           <p className="text-3xl font-semibold">{symbol}</p>
         </div>
       </section>
 
-      {/* Main Charts */}
       {candles.length > 0 && (
         <>
           <div className="mt-10">
+            <TimeframeButtons
+              timeframe={timeframe}
+              onChange={(tf) => setTimeframe(tf)}
+            />
             <CandleChart data={candles} />
           </div>
 

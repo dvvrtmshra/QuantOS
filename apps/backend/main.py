@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from utils import load_candles
+from datetime import datetime
 from indicators import get_rsi
 from forecast import price_forecast
 from routes.price import router as price_router
@@ -35,20 +36,10 @@ def health():
 # Candle Endpoint
 # ------------------------------------------------
 @app.get("/candles")
-def get_candles(symbol: str = "BTC"):
-    raw = load_candles(symbol)
+def get_candles(symbol: str, period: str = "1mo", interval: str = "1d"):
+    candles = load_candles(symbol, period, interval)
+    return candles
 
-    formatted = []
-    for c in raw:
-        formatted.append({
-            "timestamp": str(c["time"]),
-            "open": c["open"],
-            "high": c["high"],
-            "low": c["low"],
-            "close": c["close"],
-        })
-
-    return formatted
 
 
 # ------------------------------------------------
