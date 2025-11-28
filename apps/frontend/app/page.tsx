@@ -6,7 +6,10 @@ import CandleChart from "@/components/charts/CandleChart";
 import RSIChart from "@/components/charts/RSIChart";
 import SearchBar from "@/components/SearchBar";
 import TimeframeButtons from "@/components/TimeframeButtons";
+import MAButtons from "@/components/MAButtons"; // 🔥 ADD THIS
 import { api } from "@/lib/api";
+import ChartModeButtons from "@/components/ChartModeButtons";
+
 
 const TIMEFRAMES = {
   "1D": { period: "5d", interval: "30m" },
@@ -24,6 +27,13 @@ export default function Dashboard() {
   const [candles, setCandles] = useState([]);
   const [rsi, setRsi] = useState<number | null>(null);
   const [price, setPrice] = useState<number | null>(null);
+
+  // MA toggles
+  const [showMA20, setShowMA20] = useState(true);
+  const [showMA50, setShowMA50] = useState(false);
+
+  const [chartMode, setChartMode] = useState<"candle" | "line">("candle");
+
 
   useEffect(() => {
     async function load() {
@@ -43,22 +53,26 @@ export default function Dashboard() {
         // ---- live price ----
         const p = await api(`/price?symbol=${symbol}`);
         setPrice(p.price);
+
       } catch (err) {
         console.error("API Error:", err);
       }
     }
 
     load();
-  }, [symbol, timeframe]); // <-- FIX HERE
+  }, [symbol, timeframe]); // 🔥 timeframe must update chart
 
   return (
     <PageShell>
+      {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">QuantOS Dashboard</h1>
         <SearchBar onSearch={(s) => setSymbol(s)} />
       </div>
 
+      {/* 📊 Stats */}
       <section className="grid grid-cols-4 gap-4 mt-6">
+        
         <div className="p-4 bg-neutral-900 rounded-lg">
           <p className="text-sm text-neutral-400">Current Price</p>
           <p className="text-3xl font-semibold">
@@ -89,16 +103,46 @@ export default function Dashboard() {
         </div>
       </section>
 
+      {/* 📈 Chart Section */}
       {candles.length > 0 && (
         <>
           <div className="mt-10">
+            
+            {/* TIMEFRAMES */}
             <TimeframeButtons
               timeframe={timeframe}
               onChange={(tf) => setTimeframe(tf)}
             />
-            <CandleChart data={candles} />
+
+            <ChartModeButtons
+              mode={chartMode}
+              onChange={(m) => setChartMode(m)}
+            />
+
+
+
+            {/* MA TOGGLES */}
+            <MAButtons
+              ma20={showMA20}
+              ma50={showMA50}
+              onChange={(k) => {
+                if (k === "ma20") setShowMA20(!showMA20);
+                if (k === "ma50") setShowMA50(!showMA50);
+              }}
+            />
+
+            {/* MAIN CHART */}
+            <CandleChart
+              data={candles}
+              mode={chartMode}
+              showMA20={showMA20}
+              showMA50={showMA50}
+            />
+
+
           </div>
 
+          {/* RSI CHART */}
           <div className="mt-10">
             <RSIChart data={candles} />
           </div>
