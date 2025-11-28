@@ -11,31 +11,35 @@ export default function Dashboard() {
   const [symbol, setSymbol] = useState("BTC");
   const [candles, setCandles] = useState<any[]>([]);
   const [rsi, setRsi] = useState<number | null>(null);
+  const [price, setPrice] = useState<number | null>(null);
 
-  // load data when symbol changes
   useEffect(() => {
     async function load() {
       try {
+        // 🚀 Fetch historical candles
         const c = await api(`/candles?symbol=${symbol}`);
-        const r = await api(`/rsi?symbol=${symbol}`);
-
         setCandles(c);
+
+        // 🚀 Fetch RSI
+        const r = await api(`/rsi?symbol=${symbol}`);
         setRsi(r.rsi);
+
+        // 🚀 Fetch Real-time Price
+        const p = await api(`/price?symbol=${symbol}`);
+        setPrice(p.price);
       } catch (err) {
         console.error("API Error:", err);
       }
     }
+
     load();
   }, [symbol]);
-
-  const currentPrice =
-    candles?.length ? candles[candles.length - 1].close : null;
 
   return (
     <PageShell>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">QuantOS Dashoard</h1>
+        <h1 className="text-3xl font-bold">QuantOS Dashboard</h1>
         <SearchBar onSearch={(s) => setSymbol(s)} />
       </div>
 
@@ -46,7 +50,12 @@ export default function Dashboard() {
         <div className="p-4 bg-neutral-900 rounded-lg">
           <p className="text-sm text-neutral-400">Current Price</p>
           <p className="text-3xl font-semibold">
-            {currentPrice ?? "—"}
+            {price
+              ? Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(price)
+              : "—"}
           </p>
         </div>
 
@@ -54,7 +63,7 @@ export default function Dashboard() {
         <div className="p-4 bg-neutral-900 rounded-lg">
           <p className="text-sm text-neutral-400">RSI</p>
           <p className="text-3xl font-semibold">
-            {rsi?.toFixed(2) ?? "—"}
+            {rsi !== null ? rsi.toFixed(2) : "—"}
           </p>
         </div>
 

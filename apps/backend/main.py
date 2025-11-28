@@ -3,22 +3,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from utils import load_candles
 from indicators import get_rsi
 from forecast import price_forecast
-
+from routes.price import router as price_router
 
 app = FastAPI(title="QuantOS API")
 
-
 # ------------------------------------------------
-# CORS (Required for frontend requests)
+# CORS
 # ------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ------------------------------------------------
+# INCLUDE ROUTES
+# ------------------------------------------------
+app.include_router(price_router)
 
 # ------------------------------------------------
 # Health Check
@@ -33,31 +36,12 @@ def health():
 # ------------------------------------------------
 @app.get("/candles")
 def get_candles(symbol: str = "BTC"):
-    """
-    Return normalized candle data for frontend chart.
-    Your candle structure is:
-    {
-        "time": int,
-        "open": ...,
-        "high": ...,
-        "low": ...,
-        "close": ...
-    }
-    We convert to:
-    {
-        "timestamp": str,
-        "open": ...,
-        "high": ...,
-        "low": ...,
-        "close": ...
-    }
-    """
     raw = load_candles(symbol)
 
     formatted = []
     for c in raw:
         formatted.append({
-            "timestamp": str(c["time"]),  # FRONTEND FRIENDLY
+            "timestamp": str(c["time"]),
             "open": c["open"],
             "high": c["high"],
             "low": c["low"],
