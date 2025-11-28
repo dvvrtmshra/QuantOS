@@ -9,6 +9,10 @@ import TimeframeButtons from "@/components/TimeframeButtons";
 import MAButtons from "@/components/MAButtons"; // 🔥 ADD THIS
 import { api } from "@/lib/api";
 import ChartModeButtons from "@/components/ChartModeButtons";
+import ForecastChart from "@/components/charts/ForecastChart";
+import ForecastHorizonButtons from "@/components/ForecastHorizonButtons";
+
+
 
 
 const TIMEFRAMES = {
@@ -34,33 +38,46 @@ export default function Dashboard() {
 
   const [chartMode, setChartMode] = useState<"candle" | "line">("candle");
 
+  const [forecastHistory, setForecastHistory] = useState<any[]>([]);
+  const [forecastPoints, setForecastPoints] = useState<any[]>([]);
+  const [forecastHorizon, setForecastHorizon] = useState(30); // default 30 days
+
+
 
   useEffect(() => {
-    async function load() {
-      try {
-        const { period, interval } = TIMEFRAMES[timeframe];
+  async function load() {
+    try {
+      const { period, interval } = TIMEFRAMES[timeframe];
 
-        // ---- candles ----
-        const c = await api(
-          `/candles?symbol=${symbol}&period=${period}&interval=${interval}`
-        );
-        setCandles(c);
+      // ---- candles ----
+      const c = await api(
+        `/candles?symbol=${symbol}&period=${period}&interval=${interval}`
+      );
+      setCandles(c);
 
-        // ---- RSI ----
-        const r = await api(`/rsi?symbol=${symbol}`);
-        setRsi(r.rsi);
+      // ---- RSI ----
+      const r = await api(`/rsi?symbol=${symbol}`);
+      setRsi(r.rsi);
 
-        // ---- live price ----
-        const p = await api(`/price?symbol=${symbol}`);
-        setPrice(p.price);
+      // ---- live price ----
+      const p = await api(`/price?symbol=${symbol}`);
+      setPrice(p.price);
 
-      } catch (err) {
-        console.error("API Error:", err);
-      }
+      // ---- ML forecast (30 days by default for now) ----
+      const f = await api(
+        `/forecast?symbol=${symbol}&horizon=${forecastHorizon}`
+      );
+      setForecastHistory(f.history);
+      setForecastPoints(f.forecast);
+
+    } catch (err) {
+      console.error("API Error:", err);
     }
+  }
 
-    load();
-  }, [symbol, timeframe]); // 🔥 timeframe must update chart
+  load();
+}, [symbol, timeframe, forecastHorizon]);
+
 
   return (
     <PageShell>
@@ -145,6 +162,23 @@ export default function Dashboard() {
           {/* RSI CHART */}
           <div className="mt-10">
             <RSIChart data={candles} />
+            {forecastHistory.length > 0 && forecastPoints.length > 0 && (
+  <div className="mt-10">
+    <div className="flex items-center justify-between mb-3">
+      <h2 className="text-xl font-semibold">
+        {forecastHorizon}-Day ML Forecast
+      </h2>
+      <ForecastHorizonButtons
+        horizon={forecastHorizon}
+        onChange={(h) => setForecastHorizon(h)}
+      />
+    </div>
+
+    <ForecastChart history={forecastHistory} forecast={forecastPoints} />
+  </div>
+)}
+
+
           </div>
         </>
       )}

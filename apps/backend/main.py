@@ -3,8 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from utils import load_candles
 from datetime import datetime
 from indicators import get_rsi
-from forecast import price_forecast
+from forecast import forecast_prices
+
 from routes.price import router as price_router
+
 
 app = FastAPI(title="QuantOS API")
 
@@ -54,10 +56,14 @@ def get_rsi_api(symbol: str = "BTC", period: int = 14):
 
 
 # ------------------------------------------------
-# Forecast Endpoint
+# Forecast Endpoint (ML-based)
 # ------------------------------------------------
 @app.get("/forecast")
-def get_forecast(symbol: str = "BTC"):
-    data = load_candles(symbol)
-    closes = [c["close"] for c in data]
-    return price_forecast(closes)
+def get_forecast(symbol: str, horizon: int = 30):
+    """
+    Return ML-based forecast:
+    - symbol: ticker
+    - horizon: days ahead (default 30)
+    """
+    return forecast_prices(symbol, horizon)
+
