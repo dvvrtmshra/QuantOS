@@ -4,7 +4,7 @@ from utils import load_candles
 from datetime import datetime
 from indicators import get_rsi
 from forecast import forecast_prices
-
+from routes.news import router as news_router
 from routes.price import router as price_router
 
 
@@ -25,6 +25,8 @@ app.add_middleware(
 # INCLUDE ROUTES
 # ------------------------------------------------
 app.include_router(price_router)
+app.include_router(news_router)
+
 
 # ------------------------------------------------
 # Health Check
