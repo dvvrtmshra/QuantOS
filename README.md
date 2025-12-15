@@ -1,3 +1,4 @@
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 # QuantOS
 
 QuantOS is a personal market analysis dashboard built purely for fun and learning.  
@@ -51,99 +52,102 @@ _Add screenshots here_
 ```bash
 git clone https://github.com/your-username/quantos.git
 cd quantos
-2. Frontend Setup
-bash
-Copy code
+```
+### 2. Frontend Setup
+```bash
 cd apps/frontend
 npm install
-Create a .env.local file inside apps/frontend:
-
-env
-Copy code
+```
+### Create a .env.local file inside apps/frontend:
+```bash
 NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
-Run the frontend:
-
-bash
-Copy code
+```
+### Run the frontend:
+```bash
 npm run dev
+```
 Frontend will be available at:
-
-arduino
-Copy code
+```bash
 http://localhost:3000
-3. Backend Setup
-bash
-Copy code
+```
+### 3. Backend Setup
+```bash
 cd apps/backend
 python -m venv .venv
+```
 Activate the virtual environment:
-
-bash
-Copy code
+```bash
 # macOS / Linux
 source .venv/bin/activate
-
 # Windows
 .venv\Scripts\activate
+```
 Install dependencies:
-
-bash
-Copy code
+```bash
 pip install -r requirements.txt
+```
 Run the backend:
-
-bash
-Copy code
+```bash
 uvicorn main:app --reload --port 8000
+```
 Backend will be available at:
-
-cpp
-Copy code
+```bash
 http://127.0.0.1:8000
-How To Use
-Open the dashboard
+```
+### How To Use
 
-Search for a symbol (BTC, AMZN, AAPL, etc.)
+- Open the dashboard
+- Search for a symbol (BTC, AMZN, AAPL, etc.)
+- Switch between candlestick / line charts
+- Toggle indicators from **More Charts**
+- Add assets to your watchlist ⭐
+- View ML-based forecasts and price behavior
 
-Switch between candlestick / line charts
+**No login.**  
+**No accounts.**  
+**No setup pain.**
 
-Toggle indicators from More Charts
+---
 
-Add assets to your watchlist ⭐
+### Project Status
 
-View ML-based forecasts and price behavior
+✅ **Completed**
 
-No login.
-No accounts.
-No setup pain.
-
-Project Status
-✅ Completed
-
-QuantOS is feature-complete for what it was meant to be.
+QuantOS is feature-complete for what it was meant to be.  
 No active development planned unless something interesting comes up.
 
-Contributions
-This project was built mainly for learning and experimentation,
+---
+
+### Contributions
+
+This project was built mainly for learning and experimentation,  
 but contributions are welcome.
 
-If you want to contribute:
+**If you want to contribute:**
 
-Fork the repository
+1. Fork the repository  
+2. Create a new branch  
+3. Make your changes  
+4. Open a PR with a short explanation  
 
-Create a new branch
+> Keep it simple — clarity over complexity.
 
-Make your changes
+---
 
-Open a PR with a short explanation
+### Disclaimer
 
-Keep it simple — clarity over complexity.
-
-Disclaimer
-This project is not financial advice.
+⚠️ **This project is not financial advice.**  
 All data, indicators, and forecasts are for educational purposes only.
 
-Why This Exists
-Because building things is fun.
-Because dashboards teach you a lot.
-Because not every project needs to be a startup.
+## License
+
+This project is licensed under the **MIT License**.  
+See the [LICENSE](LICENSE) file for details.
+
+---
+
+### Why This Exists
+
+- Because building things is fun
+- Because dashboards teach you a lot
+- Because not every project needs to be a startup
