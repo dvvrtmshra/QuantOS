@@ -15,10 +15,9 @@ Just building stuff.
 - Interactive candlestick & line charts  
 - Multiple timeframes (1D → MAX)  
 - Technical indicators (RSI, SMA 20, SMA 50)  
-- ML-based price forecast visualization  
+- Price forecast visualization  
 - Watchlist support (local storage, no auth)  
-- Clean, dark, terminal-inspired UI  
-- Modular frontend & backend structure  
+- Clean, dark, terminal-inspired UI   
 
 ---
 
@@ -41,7 +40,10 @@ Just building stuff.
 
 ## Screenshots
 
-_Add screenshots here_
+<img src="https://i.ibb.co/cBWwJC3/Screenshot-2025-12-15-183450.png" alt="Screenshot 2025 12 15 183450" border="0">
+<img src="https://i.ibb.co/99sXmKTL/Screenshot-2025-12-15-183411.png" alt="Screenshot 2025 12 15 183411" border="0">
+<img src="https://i.ibb.co/Hfz70Q4M/Screenshot-2025-12-15-183434.png" alt="Screenshot 2025 12 15 183434" border="0">
+<img src="https://i.ibb.co/fVrbjC7m/Screenshot-2025-12-15-183506.png" alt="Screenshot 2025 12 15 183506" border="0">
 
 ---
 
@@ -145,9 +147,3 @@ This project is licensed under the **MIT License**.
 See the [LICENSE](LICENSE) file for details.
 
 ---
-
-### Why This Exists
-
-- Because building things is fun
-- Because dashboards teach you a lot
-- Because not every project needs to be a startup
