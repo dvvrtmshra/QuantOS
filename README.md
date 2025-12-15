@@ -1,118 +1,149 @@
-# QuantOS — Financial Analytics Dashboard
+# QuantOS
 
-QuantOS is a modular financial dashboard for market analytics, technical indicators, and quantitative tooling. It uses a Next.js frontend and a FastAPI backend to deliver real-time market insights and portfolio tracking.
+QuantOS is a personal market analysis dashboard built purely for fun and learning.  
+It’s **not** meant to be a production trading platform — the goal was to experiment with charts, indicators, forecasting, UI design, and overall system architecture.
 
-## Features
-
-### Market Analytics
-
-* Search stocks and assets
-* Real-time/near real-time quotes
-* Historical OHLCV data visualization
-* Candlestick charts, RSI, EMA overlays
-
-### Portfolio Management
-
-* Create and manage portfolios
-* Unrealized and realized P/L
-* Weighted performance metrics
-
-### Quant Toolkit
-
-* Core indicators (RSI, SMA, EMA, MACD, VWAP)
-* Preparation for strategy backtesting
-* Modular design for expandable trading logic
-
-## Tech Stack
-
-Frontend:
-
-* Next.js 14 (App Router)
-* TailwindCSS
-* ShadCN UI
-* Recharts / TradingView-like chart components
-
-Backend:
-
-* FastAPI
-* Python
-* Pydantic
-* Standard REST endpoints
-
-Data:
-
-* Data providers (AlphaVantage, Yahoo Finance, etc.)
-* Future integration with WebSocket feeds
-* Optional MongoDB or PostgreSQL storage layer
-
-## Project Structure
-
-```
-quantos/
-│
-├── backend/
-│   ├── main.py             # FastAPI entrypoint
-│   ├── routes/             # API endpoints
-│   ├── services/           # market, portfolio, indicators
-│   ├── schemas/            # request/response models
-│   ├── core/               # config, logging, utils
-│   ├── tests/              # backend tests
-│
-├── frontend/
-│   ├── app/                # Next.js app router
-│   ├── components/         # UI components
-│   ├── utils/              # API fetchers and helpers
-│   ├── styles/             # Tailwind global styles
-│   ├── public/             # static assets
-│
-├── docs/
-│   ├── api.md
-│   ├── design.md
-│
-└── README.md
-```
-## UI Modules
-
-* Dashboard: watchlist, alerts, overview
-* Market Explorer: charts, indicators, ticker search
-* Portfolio: asset tracking, allocation, returns
-* Quant Lab: strategy prototyping (WIP)
-
-## Development Roadmap
-
-v0.1
-
-* Symbol search
-* Historical data
-* OHLC chart
-* RSI/EMA overlays
-
-v0.2
-
-* Portfolio CRUD
-* Basic P/L calculation
-* Heatmaps
-
-v0.3
-
-* Strategy engine
-* Paper trading
-* WebSocket price feeds
-
-## License
-
-MIT License
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
+No serious financial intentions.  
+No trading advice.  
+Just building stuff.
 
 ---
 
-If you want, I can generate:
+## Features
 
-* `api.md` documentation
-* a full `requirements.txt` + `package.json`
-* or a complete project scaffold (ready to code).
+- Interactive candlestick & line charts  
+- Multiple timeframes (1D → MAX)  
+- Technical indicators (RSI, SMA 20, SMA 50)  
+- ML-based price forecast visualization  
+- Watchlist support (local storage, no auth)  
+- Clean, dark, terminal-inspired UI  
+- Modular frontend & backend structure  
+
+---
+
+## Tech Stack
+
+### Frontend
+- Next.js (App Router)
+- React
+- Tailwind CSS
+- TypeScript
+
+### Backend
+- FastAPI (Python)
+
+### Other
+- REST APIs
+- LocalStorage (watchlist)
+
+---
+
+## Screenshots
+
+_Add screenshots here_
+
+---
+
+## Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/quantos.git
+cd quantos
+2. Frontend Setup
+bash
+Copy code
+cd apps/frontend
+npm install
+Create a .env.local file inside apps/frontend:
+
+env
+Copy code
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+Run the frontend:
+
+bash
+Copy code
+npm run dev
+Frontend will be available at:
+
+arduino
+Copy code
+http://localhost:3000
+3. Backend Setup
+bash
+Copy code
+cd apps/backend
+python -m venv .venv
+Activate the virtual environment:
+
+bash
+Copy code
+# macOS / Linux
+source .venv/bin/activate
+
+# Windows
+.venv\Scripts\activate
+Install dependencies:
+
+bash
+Copy code
+pip install -r requirements.txt
+Run the backend:
+
+bash
+Copy code
+uvicorn main:app --reload --port 8000
+Backend will be available at:
+
+cpp
+Copy code
+http://127.0.0.1:8000
+How To Use
+Open the dashboard
+
+Search for a symbol (BTC, AMZN, AAPL, etc.)
+
+Switch between candlestick / line charts
+
+Toggle indicators from More Charts
+
+Add assets to your watchlist ⭐
+
+View ML-based forecasts and price behavior
+
+No login.
+No accounts.
+No setup pain.
+
+Project Status
+✅ Completed
+
+QuantOS is feature-complete for what it was meant to be.
+No active development planned unless something interesting comes up.
+
+Contributions
+This project was built mainly for learning and experimentation,
+but contributions are welcome.
+
+If you want to contribute:
+
+Fork the repository
+
+Create a new branch
+
+Make your changes
+
+Open a PR with a short explanation
+
+Keep it simple — clarity over complexity.
+
+Disclaimer
+This project is not financial advice.
+All data, indicators, and forecasts are for educational purposes only.
+
+Why This Exists
+Because building things is fun.
+Because dashboards teach you a lot.
+Because not every project needs to be a startup.
