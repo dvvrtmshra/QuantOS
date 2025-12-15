@@ -1,57 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import PageShell from "@/components/layout/PageShell";
+import Link from "next/link";
 
-export default function Home() {
-  const [news, setNews] = useState([]);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch("http://127.0.0.1:8000/news");
-        const data = await res.json();
-        setNews(data.articles || []);
-      } catch (e) {
-        console.error("Failed to load news", e);
-      }
-    }
-    load();
-  }, []);
-
+export default function HomePage() {
   return (
-    <PageShell>
-      <div className="px-6 py-10">
-        <h1 className="text-4xl font-bold mb-8">🌍 Global Financial News</h1>
+    <main className="min-h-screen flex flex-col items-center justify-center px-6">
+      <h1 className="text-4xl font-bold mb-4">
+        QuantOS
+      </h1>
 
-        <div className="grid grid-cols-3 gap-6">
-          {news.map((n: any, i: number) => (
-            <a
-              key={i}
-              href={n.url}
-              target="_blank"
-              className="bg-neutral-900 rounded-lg overflow-hidden hover:opacity-90 transition"
-            >
-              {n.image && (
-                <img src={n.image} className="h-56 w-full object-cover" />
-              )}
-              <div className="p-4">
-                <h3 className="font-semibold text-lg text-white line-clamp-2">
-                  {n.title}
-                </h3>
+      <p className="text-neutral-400 mb-8 text-center max-w-xl">
+        A quantitative trading dashboard for market analysis,
+        forecasting, and decision support.
+      </p>
 
-                <p className="text-gray-400 text-sm mt-2">
-                  {n.source}
-                </p>
+      <div className="flex gap-4">
+        <Link
+          href="/dashboard"
+          className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 transition text-white font-medium"
+        >
+          Go to Dashboard
+        </Link>
 
-                <p className="text-gray-500 text-xs mt-1">
-                  {n.published}
-                </p>
-              </div>
-            </a>
-          ))}
-        </div>
+        <Link
+          href="/news"
+          className="px-6 py-3 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition text-white font-medium"
+        >
+          Market News
+        </Link>
       </div>
-    </PageShell>
+    </main>
   );
 }

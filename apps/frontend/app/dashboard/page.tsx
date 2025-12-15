@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 
 import PageShell from "@/components/layout/PageShell";
 import SearchBar from "@/components/SearchBar";
@@ -17,9 +17,8 @@ import ForecastHorizonButtons from "@/components/ForecastHorizonButtons";
 
 import { api } from "@/lib/api";
 
-
 // ===================== TIMEFRAMES =====================
-const TIMEFRAMES = {
+const TIMEFRAMES: Record<string, { period: string; interval: string }> = {
   "1D": { period: "5d", interval: "30m" },
   "1M": { period: "1mo", interval: "1d" },
   "3M": { period: "3mo", interval: "1d" },
@@ -28,7 +27,6 @@ const TIMEFRAMES = {
   "5Y": { period: "5y", interval: "1wk" },
   "MAX": { period: "max", interval: "1wk" },
 };
-
 
 export default function Dashboard() {
   // ===================== CORE STATE =====================
@@ -41,7 +39,7 @@ export default function Dashboard() {
   const [price, setPrice] = useState<number | null>(null);
   const [rsi, setRsi] = useState<number | null>(null);
 
-  // ===================== Indicators =====================
+  // ===================== INDICATORS =====================
   const [showMA20, setShowMA20] = useState(true);
   const [showMA50, setShowMA50] = useState(false);
   const [activeCharts, setActiveCharts] = useState<string[]>([]);
@@ -51,10 +49,7 @@ export default function Dashboard() {
   const [forecastPoints, setForecastPoints] = useState<any[]>([]);
   const [forecastHorizon, setForecastHorizon] = useState(30);
 
-
-  // ==========================================================
-  // ~ BACKEND DATA FETCH
-  // ==========================================================
+  // ===================== FETCH DATA =====================
   useEffect(() => {
     async function fetchData() {
       try {
@@ -76,18 +71,19 @@ export default function Dashboard() {
         );
         setForecastHistory(forecastData.history);
         setForecastPoints(forecastData.forecast);
-      } catch (error) {
-        console.error("API Error:", error);
+      } catch (e) {
+        console.error("API Error:", e);
       }
     }
 
     fetchData();
   }, [symbol, timeframe, forecastHorizon]);
 
+const searchParams = new URLSearchParams(window.location.search);
+const s = searchParams.get("symbol");
+if (s) setSymbol(s);
 
-  // ==========================================================
-  // ~ TOGGLE ADD-ON CHARTS
-  // ==========================================================
+  // ===================== TOGGLE CHARTS =====================
   function toggleChart(key: string) {
     setActiveCharts((prev) =>
       prev.includes(key)
@@ -96,34 +92,31 @@ export default function Dashboard() {
     );
   }
 
-
-  // ==========================================================
-  // UI RENDER
-  // ==========================================================
+  // ===================== UI =====================
   return (
     <PageShell>
-
-      {/* ============= Header ============= */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold">QuantOS Dashboard</h1>
+      {/* ===== Header ===== */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-semibold">QuantOS</h1>
         <SearchBar onSearch={setSymbol} />
       </div>
 
-
-      {/* ============= STATS ============= */}
-      <section className="grid grid-cols-4 gap-4 mt-4">
-        <StatCard label="Current Price">
-          {price ?
-            Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
-                .format(price)
-          : "—"}
+      {/* ===== Stats ===== */}
+      <section className="grid grid-cols-4 gap-4 mb-6">
+        <StatCard label="Price">
+          {price
+            ? Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(price)
+            : "—"}
         </StatCard>
 
         <StatCard label="RSI">
           {rsi !== null ? rsi.toFixed(2) : "—"}
         </StatCard>
 
-        <StatCard label="Candles Loaded">
+        <StatCard label="Candles">
           {candles.length}
         </StatCard>
 
@@ -132,41 +125,38 @@ export default function Dashboard() {
         </StatCard>
       </section>
 
+      {/* ===== Control Bar ===== */}
+{candles.length > 0 && (
+  <div className="mt-6 flex flex-col gap-3">
 
-      {/* ============= CONTROL BAR ============= */}
+    {/* Row 1 — Timeframes (Primary) */}
+    <div className="flex items-center">
+      <TimeframeButtons
+        timeframe={timeframe}
+        onChange={setTimeframe}
+      />
+    </div>
+
+   {/* Row — Chart Controls */}
+<div className="flex items-center gap-2 h-9">
+  <ChartModeButtons
+    mode={chartMode}
+    onChange={setChartMode}
+  />
+
+  <MoreChartsMenu
+    selected={activeCharts}
+    onChange={toggleChart}
+  />
+</div>
+
+
+  </div>
+)}
+
+      {/* ===== Main Chart ===== */}
       {candles.length > 0 && (
-        <div className="mt-10 flex flex-wrap gap-3 items-center">
-
-          <TimeframeButtons
-            timeframe={timeframe}
-            onChange={setTimeframe}
-          />
-
-          <ChartModeButtons
-            mode={chartMode}
-            onChange={setChartMode}
-          />
-
-          <MAButtons
-            ma20={showMA20}
-            ma50={showMA50}
-            onChange={(key) => {
-              if (key === "ma20") setShowMA20((p) => !p);
-              if (key === "ma50") setShowMA50((p) => !p);
-            }}
-          />
-
-          <MoreChartsMenu
-            selected={activeCharts}
-            onChange={toggleChart}
-          />
-        </div>
-      )}
-
-
-      {/* ============= MAIN PRICE CHART ============= */}
-      {candles.length > 0 && (
-        <div className="mt-10">
+        <div className="mb-10">
           <CandleChart
             data={candles}
             mode={chartMode}
@@ -176,19 +166,17 @@ export default function Dashboard() {
         </div>
       )}
 
-
-      {/* ============= RSI ============= */}
+      {/* ===== RSI ===== */}
       {activeCharts.includes("rsi") && (
-        <div className="mt-10">
+        <div className="mb-10">
           <RSIChart data={candles} />
         </div>
       )}
 
-
-      {/* ============= FORECAST ============= */}
+      {/* ===== Forecast ===== */}
       {forecastHistory.length > 0 && forecastPoints.length > 0 && (
         <div className="mt-12">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">
               {forecastHorizon}-Day ML Forecast
             </h2>
@@ -205,21 +193,22 @@ export default function Dashboard() {
           />
         </div>
       )}
-
     </PageShell>
   );
 }
 
-
-
-// ========================================================
-// Small reusable stat card
-// ========================================================
-function StatCard({ label, children }: any) {
+// ===================== Stat Card =====================
+function StatCard({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="p-4 bg-neutral-900 rounded-lg">
       <p className="text-sm text-neutral-400">{label}</p>
-      <p className="text-3xl font-semibold">{children}</p>
+      <p className="text-2xl font-semibold">{children}</p>
     </div>
   );
 }

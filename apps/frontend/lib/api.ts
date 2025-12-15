@@ -1,20 +1,24 @@
-export async function api(path: string) {
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
+export async function api(path: string) {
   const url = `${BASE_URL}${path}`;
 
-  const res = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  if (!res.ok) {
-    console.error("API failed:", res.status, res.statusText);
-    throw new Error(`Backend request failed: ${res.status}`);
+    if (!res.ok) {
+      throw new Error(`API error ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error("Fetch failed:", url, err);
+    throw err;
   }
-
-  return res.json();
 }
